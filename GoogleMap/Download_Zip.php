@@ -9,7 +9,7 @@ $zoom=$url[2];
 $size=$url[3];
 $maptype=$url[4];
 
-$url ="https://maps.googleapis.com/maps/api/staticmap?center=".$lat.",".$lng."&zoom=".$zoom."&size=".$size."&maptype=".$maptype."&format=jpg&key=AIzaSyBLUpK1AgeMf3ieB4KkmorgyRxW0Gbllvc";	
+$url ="https://maps.googleapis.com/maps/api/staticmap?center=".$lat.",".$lng."&zoom=".$zoom."&size=".$size."&scale=2&maptype=".$maptype."&format=jpg&key=AIzaSyBLUpK1AgeMf3ieB4KkmorgyRxW0Gbllvc";	
 $output = explode(" ", $_GET['value']);
 $per_x=$output[0];
 $per_y="-".$output[1];
@@ -22,7 +22,6 @@ checkName($file_zip.".zip");
 $jpgw_tfw=$per_x."\r\n0\r\n0\r\n".$per_y."\r\n".$easting."\r\n".$northing;
 //$jpgw_tfw=chr(239) . chr(187) . chr(191) .$jpgw_tfw;
 create_file($jpgw_tfw,$file_zip,".jpgw");
-create_file($zone,$file_zip,".txt");
 create_file($jpgw_tfw,$file_zip,".tfw");
 create_img_tif($file_zip,$url);
 create_img_jpg($file_zip,$url);
@@ -71,19 +70,16 @@ function create_zip($file_name,$file_zip,$EPSG)
 	$file_tfw=IMAGE_DIR_PATH.$file_zip.".tfw";
 	$file_img =IMAGE_DIR_PATH.$file_zip.".jpg";
 	$file_jpgw=IMAGE_DIR_PATH.$file_zip.".jpgw";
-	$file_txt =IMAGE_DIR_PATH.$file_zip.".txt";
 	$file_zip =IMAGE_DIR_PATH.$file_zip.".zip";
 	$zip = new ZipArchive;
 	$res_zip = $zip->open($file_zip, ZipArchive::CREATE);
 	if (TRUE === $res_zip) 
 	{
-		$zip->addFile($file_txt, "EPSG_".$EPSG.".txt");
 		$zip->addFile($file_img, "jpg/".$file_name.".jpg");
 		$zip->addFile($file_jpgw, "jpg/".$file_name.".jpgw");
 		$zip->addFile($file_tif, "tif/".$file_name.".tif");
 		$zip->addFile($file_tfw, "tif/".$file_name.".tfw");
 		$zip->close();
-		unlink($file_txt);
 		unlink($file_img);
 		unlink($file_jpgw);
 		unlink($file_tif);
@@ -91,7 +87,6 @@ function create_zip($file_name,$file_zip,$EPSG)
 	}
 	else
 	{
-		unlink($file_txt);
 		unlink($file_img);
 		unlink($file_jpgw);
 		unlink($file_tif);

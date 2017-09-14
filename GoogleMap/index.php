@@ -40,7 +40,7 @@
 	<br>
 	
 	<table width="800px">
-	<td><h3>設定中心位置</h3></td>	
+	<td><h3>設定中心點</h3></td>	
 	<tr>	
 			<td><input type="radio" checked name="myRadios" onclick='chang_model(this)' value="1" /> 
 			<a id="address_temp">地址:<input type="text"   style="width:300px" id="adress" value="雲林縣虎尾鎮"></a></td>		
@@ -48,23 +48,28 @@
 			<td> 緯度:  <a id="lat_temp"><input type="text" disabled style="width:50px" id="latitude" value="23.5"></a></td>
 			<td> 經度: <a id="lon_temp"><input type="text" disabled style="width:50px" id="longitude" value="121"></a></td>	
 			<td><input type="button" onclick="change_Center()" value="更改中心點"></td>  		
-			    
+			  
 	</tr>
-	<td><h1>Google Map demo</h1></td>
+	
 	</table>
-	<td>左下(西南方)緯度:<input type="text" style="width:150px" id="left_lat" value=""></td><br>
-	<td>左下(西南方)經度:<input type="text" style="width:150px" id="left_lon" value=""></td><br>
-	<td>右上(東北方)緯度:<input type="text" style="width:150px" id="right_lat" value=""></td><br>
-	<td>右上(東北方)經度:<input type="text" style="width:150px" id="right_lon" value=""></td><br>
-	<td>標示目前地圖左上及右下的經緯度<input type="button" onclick="fitbounds()" value="fitbounds"></td>
-	<td><input type="button" onclick="deleteMarkers1()" value="刪除"></td>
+	<td><h3>包含2點經緯度的地圖縮放</h3></td>	
+	<td> 緯度1:  <a id="lat_temp"><input type="text"  style="width:250px" id="l_u_latitude" value="23.12701870954534"></a></td><br>
+	<td> 經度1: <a id="lon_temp"><input type="text"   style="width:250px" id="l_u_longitude" value="120.50775335988772"></a></td><br>
+	<td> 緯度2:  <a id="lat_temp"><input type="text"  style="width:250px" id="r_d_latitude" value="22.80585274914919"></a></td><br>
+	<td> 經度2: <a id="lon_temp"><input type="text"   style="width:250px" id="r_d_longitude" value="120.96917914113769"></a></td><br>
+	<td>Fitbounds<input type="button" onclick="fitbounds()" value="確認"></td><td><input type="button" onclick="deleteMarkers1()" value="刪除標記"></td>  <br>
+	<td><h1>Google Map demo</h1></td>
+	<td>左上緯度:<a  style="width:150px" id="left_lat" ></a></td><br>
+	<td>左上經度:<a  style="width:150px" id="left_lon"></a></td><br>
+	<td>右下緯度:<a  style="width:150px" id="right_lat" ></a></td><br>
+	<td>右下經度:<a  style="width:150px" id="right_lon"></a></td><br>
+	
+	
 	<br>
 	</tr>
 <table width="900px">
 <tr>
 	<td style="width:400px">中心點經緯度:<a id="center_latlon" value="123">123</a><font color="red">(緯度,經度)</font></td><tr>
-	<td style="width:400px">左下標記點經緯度:<a id="left_latlon" value="123">(0,0)</a><font color="red">(緯度,經度)</font></td><tr>
-	<td style="width:400px">右上標記點經緯度:<a id="right_latlon" value="123">(0,0)</a><font color="red">(緯度,經度)</font></td><tr>
 	<td><a id="zoom_content">zoom(Range:1~22)</a>: <input onchange="zoom_change()" type="number" min="1" max="22"   id="zoom" value="13"></td>	
 </tr>
 </table>
@@ -89,12 +94,20 @@
 	var center_mark=[];
 	function fitbounds()
 	{
-		var left_latlon = new google.maps.LatLng(document.getElementById('left_lat').value, document.getElementById('left_lon').value);
-		var right_latlon = new google.maps.LatLng(document.getElementById('right_lat').value, document.getElementById('right_lon').value);
+		var maxlat=Number(document.getElementById('l_u_latitude').value);
+		var maxlng=Number(document.getElementById('r_d_longitude').value);
+		var minlat=Number(document.getElementById('r_d_latitude').value);
+		var minlng=Number(document.getElementById('l_u_longitude').value);
+		var left_latlon = new google.maps.LatLng(document.getElementById('l_u_latitude').value, document.getElementById('l_u_longitude').value);
+		var right_latlon = new google.maps.LatLng(document.getElementById('r_d_latitude').value, document.getElementById('r_d_longitude').value);
 		var bounds = new google.maps.LatLngBounds();
-		document.getElementById("left_latlon").innerHTML=left_latlon;
-		document.getElementById("right_latlon").innerHTML=right_latlon;
+		
+		
 		deleteMarkers();
+		
+		
+		
+		
 		var marker = new google.maps.Marker({
         position: left_latlon,
         map: map
@@ -108,8 +121,8 @@
 		bounds.extend(right_latlon);
 		bounds.extend(left_latlon);
 		map.fitBounds(bounds);
-		getMapinfo();
 		
+		getMapinfo();		
 	}
 	function zoom_change(){
 		zoom=document.getElementById("zoom").value;
@@ -132,8 +145,6 @@
 	  function deleteMarkers1() {
         clearMarkers();
         markers = [];
-		document.getElementById("left_latlon").innerHTML="(0,0)";
-		document.getElementById("right_latlon").innerHTML="(0,0)";
       }
 	function chang_model(myRadio)
 	{    
@@ -250,10 +261,11 @@
 			
 		});
 		center_mark.push(marker);
-		  document.getElementById( 'left_lat' ).value = map.getBounds().getSouthWest().lat();
-		  document.getElementById( 'left_lon' ).value = map.getBounds().getSouthWest().lng();
-		  document.getElementById( 'right_lat' ).value = map.getBounds().getNorthEast().lat();
-		  document.getElementById( 'right_lon' ).value = map.getBounds().getNorthEast().lng();
+		  
+		  document.getElementById( 'left_lat' ).innerHTML = map.getBounds().getNorthEast().lat();
+		  document.getElementById( 'left_lon' ).innerHTML = map.getBounds().getSouthWest().lng();
+		  document.getElementById( 'right_lat' ).innerHTML = map.getBounds().getSouthWest().lat();
+		  document.getElementById( 'right_lon' ).innerHTML = map.getBounds().getNorthEast().lng();
         });
 		
 		
@@ -262,17 +274,19 @@
 	   function getMapinfo()
 	   {
 		document.getElementById( 'zoom' ).value = map.getZoom();
-		document.getElementById( 'left_lat' ).value = map.getBounds().getSouthWest().lat();
-		document.getElementById( 'left_lon' ).value = map.getBounds().getSouthWest().lng();
-		document.getElementById( 'right_lat' ).value = map.getBounds().getNorthEast().lat();
-		document.getElementById( 'right_lon' ).value = map.getBounds().getNorthEast().lng();
+		document.getElementById( 'left_lat' ).innerHTML = map.getBounds().getSouthWest().lat();
+		document.getElementById( 'left_lon' ).innerHTML = map.getBounds().getSouthWest().lng();
+		document.getElementById( 'right_lat' ).innerHTML = map.getBounds().getNorthEast().lat();
+		document.getElementById( 'right_lon' ).innerHTML = map.getBounds().getNorthEast().lng();
 	   }
 	   function screenshot()
 	   {
 			var url_lat=map.getCenter().lat();
 			var url_lng=map.getCenter().lng();
 			var url_zoom=map.getZoom();
-			var url=url_lat+" "+url_lng+" "+ url_zoom+" "+height+"x"+width+" "+maptype;
+			var h=height;
+			var w=width;
+			var url=url_lat+" "+url_lng+" "+ url_zoom+" "+w+"x"+h+" "+maptype;
 			//alert(url);
 			var left_upper_lat=map.getBounds().getNorthEast().lat();
 			var left_upper_lon=map.getBounds().getSouthWest().lng();
@@ -282,12 +296,13 @@
 			var right_upper_lon=map.getBounds().getNorthEast().lng();
 			var x_distance=distance(Number(left_upper_lat),Number(left_upper_lon),Number(right_upper_lat),Number(right_upper_lon));
 			var y_distance=distance(Number(left_upper_lat),Number(left_upper_lon),Number(left_down_lat),Number(left_down_lon));
-			
-			var per_x = x_distance /width;
-			var per_y = y_distance /height;
+			var x_per=Number((map.getBounds().getNorthEast().lng())-Number(map.getBounds().getSouthWest().lng()))/(w*2);
+			var y_per=Number((map.getBounds().getNorthEast().lat())-Number(map.getBounds().getSouthWest().lat()))/(h*2);
+			var per_x = x_per;
+			var per_y = y_per;
 			var result = convertDecimal(Number(left_upper_lat),Number(left_upper_lon));
-			var easting = result['easting'];
-			var northing = result['northing'];
+			var easting = left_upper_lon;
+			var northing = left_upper_lat;
 			var zone = result['zone'];
 			var southern = result['southern']?"S":"N";
 			var file_name=prompt("請輸入圖檔檔名(不需加附檔名)","test_jpg");
